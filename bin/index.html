@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Catholic feast days</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
+
+</head>
+
+<body>
+  <center>
+    <h2>Catholic feast days</h2>
+    <label for="months">Months:</label>
+    <select name="months">
+      <option value="01"> January </option>
+      <option value="02"> February </option>
+      <option value="03"> March </option>
+      <option value="04"> April </option>
+      <option value="05"> May </option>
+      <option value="06"> June </option>
+      <option value="07"> July </option>
+      <option value="08"> August </option>
+      <option value="09"> September </option>
+      <option value="10"> October </option>
+      <option value="11"> November </option>
+      <option value="12"> December </option>
+    </select>
+    ​<div class="container">
+      <table id="table" class="table table-striped" data-toggle="table" data-pagination="true" data-search="true">
+        <thead>
+          <tr>
+            <th data-field="date">date</th>
+            <th data-field="celebrations" data-formatter="celebrationsFormatter">celebrations</th>
+            <th data-sortable="true" data-field="weekday">weekday</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </center>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+  <script>
+    $(function() {
+      let datum = new Date();
+      let year = datum.getFullYear();
+      var month = datum.getMonth() + 1;
+      $('#table').bootstrapTable({
+        columns: [{
+          field: 'date',
+          title: 'date'
+        }, {
+          field: 'celebrations',
+          title: 'celebrations'
+        }, {
+          field: 'weekday',
+          title: 'weekday'
+        }]
+      });
+      $('select').change(function() {
+        month = $(this).val();
+        url = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/' + year + '/' + month;
+        $.getJSON(url)
+          .done(function(data) {
+            $('#table').bootstrapTable('load', data);
+          });
+      });
+      $('select').val(month).trigger('change');
+    });
+
+    // Handle your authors formatter, looping through the
+    // authors list
+    function celebrationsFormatter(value) {
+      var celebrations = '';
+
+      // Loop through the authors object
+      for (var index = 0; index < value.length; index++) {
+        celebrations += value[index].title;
+
+        // Only show a comma if it's not the last one in the loop
+        if (index < (value.length - 1)) {
+          celebrations += ', ';
+        }
+      }
+      return celebrations;
+    }
+  </script>
+</body>
+
+</html>
